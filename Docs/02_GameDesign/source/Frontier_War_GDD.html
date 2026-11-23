@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Frontier War - Game Design Document v1.0 Draft</title>
+<style>
+@page { size: A4 landscape; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Segoe UI", Arial, sans-serif; color: #1f2a1f; font-size: 10.5pt; line-height: 1.42; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 297mm; height: 210mm; padding: 13mm 15mm 12mm; position: relative; overflow: hidden; page-break-after: always; background: #f7f6f1; }
+.page:last-child { page-break-after: auto; }
+.hdr { position: absolute; top: 6mm; left: 15mm; right: 15mm; font-size: 7.5pt; letter-spacing: .12em; color: #7a806f; text-transform: uppercase; display: flex; justify-content: space-between; }
+.ftr { position: absolute; bottom: 5mm; left: 15mm; right: 15mm; font-size: 7.5pt; color: #7a806f; display: flex; justify-content: space-between; border-top: 1px solid #d9d8cc; padding-top: 2mm; }
+.kicker { font-size: 8.5pt; font-weight: 700; letter-spacing: .16em; color: #5b7a2e; text-transform: uppercase; margin: 2mm 0 1mm; }
+h1 { font-size: 24pt; margin: 0 0 1mm; color: #1d2a12; line-height: 1.1; }
+h2 { font-size: 13pt; margin: 3mm 0 1.5mm; color: #2b3b1b; }
+h3 { font-size: 10.5pt; margin: 2mm 0 1mm; color: #2b3b1b; }
+p { margin: 0 0 2mm; }
+.lead { font-size: 11.5pt; color: #3d4733; margin-bottom: 3mm; }
+.cols { display: flex; gap: 7mm; }
+.cols > div { flex: 1; min-width: 0; }
+.c2 { flex: 2 !important; }
+img.full { width: 100%; border-radius: 3px; display: block; image-rendering: pixelated; }
+.cap { font-size: 8pt; color: #6c7262; margin-top: 1mm; }
+table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
+th { background: #2f4020; color: #f2f0e4; text-align: left; padding: 1.3mm 2mm; font-weight: 600; }
+td { padding: 1.1mm 2mm; border-bottom: 1px solid #dedccf; vertical-align: top; }
+tr:nth-child(even) td { background: #efeee5; }
+td.n { width: 6mm; color: #5b7a2e; font-weight: 700; }
+.box { background: #fff; border: 1px solid #dcdacd; border-left: 4px solid #5b7a2e; padding: 2.5mm 3.5mm; border-radius: 2px; margin-bottom: 3mm; }
+.box.blue { border-left-color: #2f6fb0; }
+.box.red { border-left-color: #b0452f; }
+.box.gold { border-left-color: #c99a1d; }
+.box b.t { display: block; font-size: 8pt; letter-spacing: .12em; text-transform: uppercase; color: #5b7a2e; margin-bottom: .8mm; }
+.box.blue b.t { color: #2f6fb0; } .box.red b.t { color: #b0452f; } .box.gold b.t { color: #a37a0c; }
+ul { margin: 0 0 2mm; padding-left: 5mm; } li { margin-bottom: .8mm; }
+.stats { display: flex; gap: 4mm; margin: 3mm 0; }
+.stat { flex: 1; background: #2f4020; color: #f2f0e4; padding: 3mm; border-radius: 3px; }
+.stat b { display: block; font-size: 20pt; line-height: 1; color: #d6e8a8; }
+.stat span { font-size: 8pt; }
+.flow { display: flex; align-items: stretch; gap: 0; margin: 3mm 0; }
+.flow .st { flex: 1; background: #fff; border: 1px solid #cfd8bd; border-radius: 4px; padding: 2.5mm; text-align: center; font-size: 8.6pt; }
+.flow .st b { display: block; font-size: 9.5pt; color: #2f4020; margin-bottom: .5mm; }
+.flow .st .num { display: inline-block; width: 6mm; height: 6mm; line-height: 6mm; border-radius: 50%; background: #5b7a2e; color: #fff; font-weight: 700; font-size: 8pt; margin-bottom: 1mm; }
+.flow .ar { width: 6mm; display: flex; align-items: center; justify-content: center; color: #5b7a2e; font-size: 14pt; font-weight: 700; }
+.tag { display: inline-block; font-size: 7.5pt; padding: .2mm 1.5mm; border-radius: 2mm; background: #e3ead3; color: #3d5a19; font-weight: 600; }
+.tag.t2 { background: #dbe6f3; color: #24548a; } .tag.t3 { background: #f3e4d0; color: #8a5a14; } .tag.x { background: #f2d6d0; color: #8a2a14; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3mm; }
+.grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 3mm; }
+.card { background: #fff; border: 1px solid #dcdacd; border-radius: 3px; padding: 2.5mm 3mm; font-size: 8.8pt; }
+.card b { color: #2f4020; }
+/* cover */
+.cover { padding: 0; background: #111; }
+.cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,14,8,.92) 0%, rgba(10,14,8,.72) 38%, rgba(10,14,8,0) 70%); }
+.cover .txt { position: absolute; left: 18mm; top: 34mm; width: 120mm; color: #eef0e2; }
+.cover .txt .k { font-size: 9pt; letter-spacing: .25em; color: #b9d27a; font-weight: 700; }
+.cover .txt h1 { font-size: 50pt; color: #fff; margin: 3mm 0; letter-spacing: .02em; }
+.cover .txt .sub { font-size: 14pt; color: #dfe3d0; margin-bottom: 8mm; }
+.cover .meta { font-size: 9pt; color: #b8bda9; border-top: 1px solid rgba(255,255,255,.25); padding-top: 3mm; }
+.cover .pill { display: inline-block; border: 1px solid rgba(255,255,255,.35); border-radius: 4mm; padding: 1mm 3mm; margin: 0 2mm 2mm 0; font-size: 9pt; }
+/* HUD mockup */
+.hud { position: relative; }
+.hud img { width: 100%; display: block; border-radius: 3px; }
+.hud .o { position: absolute; color: #eef; font-size: 7pt; font-family: "Segoe UI", sans-serif; }
+.hud .topbar { top: 0; left: 0; right: 0; height: 7mm; background: rgba(16,22,14,.82); display: flex; align-items: center; gap: 6mm; padding: 0 3mm; color: #e7ecd9; font-size: 7.5pt; }
+.hud .topbar b { color: #d6e8a8; }
+.hud .mini { left: 2mm; bottom: 2mm; width: 30mm; height: 22mm; background: rgba(16,22,14,.85); border: 1px solid #8fa36a; border-radius: 2px; }
+.hud .mini i { position: absolute; width: 1.6mm; height: 1.6mm; border-radius: 50%; }
+.hud .cmd { left: 34mm; bottom: 2mm; display: flex; gap: .8mm; font-size: 6.5pt; }
+.hud .cmd span, .hud .build span { background: rgba(16,22,14,.85); border: 1px solid #6f8450; border-radius: 2px; padding: 1mm 1.6mm; color: #e7ecd9; }
+.hud .build { right: 2mm; bottom: 2mm; width: 54mm; background: rgba(16,22,14,.85); border: 1px solid #6f8450; border-radius: 2px; padding: 1.5mm; }
+.hud .build .tabs { display: flex; gap: 1mm; margin-bottom: 1.2mm; }
+.hud .build .tabs span { padding: .5mm 1.2mm; font-size: 6.5pt; }
+.hud .build .tabs span.on { background: #5b7a2e; }
+.hud .build .icons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1mm; }
+.hud .build .icons span { text-align: center; font-size: 6.2pt; padding: 1.6mm .5mm; }
+.hud .alert { right: 2mm; top: 9mm; background: rgba(150,40,20,.85); border-radius: 2px; padding: 1mm 2mm; }
+.hud .callout { position: absolute; width: 5mm; height: 5mm; border-radius: 50%; background: #e8b923; color: #1d1d1d; font-weight: 800; font-size: 7.5pt; text-align: center; line-height: 5mm; box-shadow: 0 0 0 1px #000; }
+.code { font-family: Consolas, monospace; font-size: 8pt; background: #1d2418; color: #d9e5c4; padding: 3mm; border-radius: 3px; white-space: pre; line-height: 1.35; }
+.toc { columns: 2; column-gap: 10mm; font-size: 10pt; }
+.toc div { display: flex; justify-content: space-between; border-bottom: 1px dotted #b9b8aa; padding: 1.2mm 0; break-inside: avoid; }
+.toc div b { color: #5b7a2e; width: 9mm; display: inline-block; }
+.small { font-size: 8.4pt; color: #4a5241; }
+.wheel td { text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="page cover">
+  <img src="../../../Art/Concepts/pixel/01_key_art.jpg" alt="">
+  <div class="shade"></div>
+  <div class="txt">
+    <div class="k">GAME DESIGN DOCUMENT · DRAFT 1.0</div>
+    <h1>FRONTIER WAR</h1>
+    <div class="sub">A big, fast, sandbox real-time strategy game for Android: build a base, drill ore, and command land, air, sea and experimental war machines, all in crisp, true-to-scale pixel-filtered 3D.</div>
+    <span class="pill">Single-player only</span><span class="pill">Fully offline</span><span class="pill">Android first</span><span class="pill">Pixel-filtered 3D</span>
+    <div class="meta">Working title: Frontier War &nbsp;|&nbsp; Version 1.0 draft &nbsp;|&nbsp; 23 November 2026<br>Replaces the v0.1 "one-HQ" draft. Images show the locked target look (in-engine 3D with a pixel filter), made with Magnific as reference only.</div>
+  </div>
+</section>
+
+<!-- ============ CONTENTS ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>Contents</span></div>
+  <div class="kicker">Start here</div>
+  <h1>What is in this document</h1>
+  <p class="lead">Each page explains one idea in plain language. The tables have the numbers, and the boxes give the rules. All numbers are <b>first guesses</b> and will be balanced in the prototype.</p>
+  <div class="toc">
+    <div><span><b>01</b>The game in one page</span><span>3</span></div>
+    <div><span><b>02</b>What we keep, what we improve</span><span>4</span></div>
+    <div><span><b>03</b>How a match plays</span><span>5</span></div>
+    <div><span><b>04</b>Economy: credits and ore</span><span>6</span></div>
+    <div><span><b>05</b>Base building</span><span>7</span></div>
+    <div><span><b>06</b>Tech tiers and upgrades</span><span>8</span></div>
+    <div><span><b>07</b>Who beats who (counters)</span><span>9</span></div>
+    <div><span><b>08</b>Land units</span><span>10</span></div>
+    <div><span><b>09</b>Mechs and infantry</span><span>11</span></div>
+    <div><span><b>10</b>Air units</span><span>12</span></div>
+    <div><span><b>11</b>Naval units</span><span>13</span></div>
+    <div><span><b>12</b>Experimental units</span><span>14</span></div>
+    <div><span><b>13</b>Defences and super-weapons</span><span>15</span></div>
+    <div><span><b>14</b>Combat rules</span><span>16</span></div>
+    <div><span><b>15</b>Controls and screen layout</span><span>17</span></div>
+    <div><span><b>16</b>Quality-of-life features</span><span>18</span></div>
+    <div><span><b>17</b>Enemy AI</span><span>19</span></div>
+    <div><span><b>18</b>Game modes</span><span>20</span></div>
+    <div><span><b>19</b>Campaign: story and 50 missions</span><span>21</span></div>
+    <div><span><b>20</b>World and maps</span><span>22</span></div>
+    <div><span><b>21</b>Art direction rules</span><span>23</span></div>
+    <div><span><b>22</b>Technology and performance</span><span>24</span></div>
+    <div><span><b>23</b>Build plan and first prototype</span><span>25</span></div>
+    <div><span><b>24</b>Glossary</span><span>26</span></div>
+  </div>
+  <div class="box gold" style="margin-top:6mm"><b class="t">Identity rule</b>Frontier War is inspired by sandbox RTS games like <i>Rusted Warfare</i>: many units, real base building, extractors on resource spots and huge experimental machines. Every unit name, building name, number, faction, story and piece of art in Frontier War is our own. We do not copy another game's content.</div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>2</span></div>
+</section>
+
+<!-- ============ 01 ONE PAGE ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>01 · The game in one page</span></div>
+  <div class="kicker">01 · The game in one page</div>
+  <h1>Build. Drill. Expand. Overwhelm.</h1>
+  <div class="cols">
+    <div>
+      <p class="lead">Frontier War is a <b>classic sandbox RTS</b>. You start with a Command Core and one Constructor. You build ore drills, factories and defences. Then you fill the map with tanks, mechs, aircraft, warships and finally a giant experimental machine.</p>
+      <h3>The player fantasy</h3>
+      <ul>
+        <li><b>Start small, end huge.</b> A few buggies at minute 1, hundreds of units and a walking fortress by minute 25.</li>
+        <li><b>Every domain matters.</b> Land, air and sea each have real counters. Hover and amphibious units link them together.</li>
+        <li><b>Easy to learn, deep to master.</b> One currency, clear unit roles and simple touch controls.</li>
+        <li><b>Looks modern.</b> True-to-scale 3D battlefields with a crisp pixel filter, not low-res retro sprites.</li>
+      </ul>
+      <h3>Who it is for</h3>
+      <p>Mobile players who love big RTS battles and want a deep single-player game with no internet, no energy timers and no pay-to-win.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat"><b>47</b><span>unit types across 5 groups</span></div>
+        <div class="stat"><b>16</b><span>buildings and defences</span></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>50</b><span>story missions in 5 chapters</span></div>
+        <div class="stat"><b>300+</b><span>units on screen in normal battles</span></div>
+      </div>
+      <div class="box"><b class="t">Platform and business</b>Android first (PC later is possible). <b>Single-player only, fully offline.</b> Premium price, or a free first chapter with a one-time unlock. No ads during play and no paid power.</div>
+      <div class="box blue"><b class="t">Three design pillars</b>
+        <b>1. Scale:</b> huge armies and smooth performance.<br>
+        <b>2. Clarity:</b> you can always read what is happening, even at full zoom-out.<br>
+        <b>3. Freedom:</b> many ways to win, whether that's a rush, turtling, air, navy or experimentals.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>3</span></div>
+</section>
+
+<!-- ============ 02 KEEP / IMPROVE ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>02 · Keep and improve</span></div>
+  <div class="kicker">02 · What we keep, what we improve</div>
+  <h1>The classic formula, made modern</h1>
+  <p class="lead">Players love sandbox RTS games for their scale, their unit variety and how easy they are to pick up. Their usual weak spots are old-looking graphics, weak AI, units getting stuck, and short campaigns. We keep the first list and fix the second.</p>
+  <div class="cols">
+    <div>
+      <h2>Keep (the core feel)</h2>
+      <table>
+        <tr><th>Feature</th><th>How it works in Frontier War</th></tr>
+        <tr><td>Real base building</td><td>Constructors place factories, drills, turrets and shields anywhere you have room.</td></tr>
+        <tr><td>Resource spots</td><td>Ore Drills only go on ore deposits, so you must expand and fight for the map.</td></tr>
+        <tr><td>One simple currency</td><td>Credits. No wood, oil or power juggling.</td></tr>
+        <tr><td>Upgrades in place</td><td>Drills, factories and turrets upgrade where they stand.</td></tr>
+        <tr><td>Land, air, sea and hover</td><td>Four layers of movement, plus amphibious units that cross between them.</td></tr>
+        <tr><td>Experimental units</td><td>Huge late-game machines that can turn a battle on their own.</td></tr>
+        <tr><td>Zoom all the way out</td><td>The whole map becomes clean icons, and you still give orders.</td></tr>
+        <tr><td>Fast, macro-focused play</td><td>Big decisions matter more than fast clicking.</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Improve (what makes it new)</h2>
+      <table>
+        <tr><th>Upgrade</th><th>Why it is better</th></tr>
+        <tr><td><b>Pixel-filtered 3D</b></td><td>True-to-scale world, hard shadows, smoke, wrecks and craters.</td></tr>
+        <tr><td><b>50-mission story campaign</b></td><td>A real campaign with bosses, stars and unlocks.</td></tr>
+        <tr><td><b>Smarter AI</b></td><td>Scouts, expands, retreats, flanks and has personalities.</td></tr>
+        <tr><td><b>No traffic jams</b></td><td>Flow-field pathing and formations for big groups.</td></tr>
+        <tr><td><b>Drill choices</b></td><td>The last drill upgrade is a 3-way choice: Fortified, Overdrive or Relay.</td></tr>
+        <tr><td><b>Salvage</b></td><td>Constructors recycle wrecks into credits.</td></tr>
+        <tr><td><b>Infantry and cover</b></td><td>Cheap squads that hide in forests.</td></tr>
+        <tr><td><b>Veterancy</b></td><td>Units that survive get ranks and small bonuses.</td></tr>
+        <tr><td><b>Weather and night</b></td><td>Storms and darkness change vision and air power.</td></tr>
+        <tr><td><b>Support powers</b></td><td>Recon sweep, supply drop, EMP and airstrike.</td></tr>
+        <tr><td><b>Mobile QoL</b></td><td>Base blueprints, idle-builder alerts, tactical pause.</td></tr>
+        <tr><td><b>Offline map editor and mods</b></td><td>Units are data files, so anyone can add content.</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>4</span></div>
+</section>
+
+<!-- ============ 03 MATCH FLOW ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>03 · How a match plays</span></div>
+  <div class="kicker">03 · How a match plays</div>
+  <h1>The core loop</h1>
+  <p class="lead">Every match follows the same easy-to-understand rhythm. Players choose how fast to move through it.</p>
+  <div class="flow">
+    <div class="st"><span class="num">1</span><b>Build</b>Command Core trains Constructors</div><div class="ar">›</div>
+    <div class="st"><span class="num">2</span><b>Drill</b>Ore Drills on deposits earn credits</div><div class="ar">›</div>
+    <div class="st"><span class="num">3</span><b>Produce</b>Factories make units</div><div class="ar">›</div>
+    <div class="st"><span class="num">4</span><b>Expand</b>Take more deposits and defend them</div><div class="ar">›</div>
+    <div class="st"><span class="num">5</span><b>Upgrade</b>Tier 2 and Tier 3 tech</div><div class="ar">›</div>
+    <div class="st"><span class="num">6</span><b>Overwhelm</b>Experimentals and the final push</div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>A typical 20-minute skirmish</h2>
+      <table>
+        <tr><th>Time</th><th>Phase</th><th>What the player does</th></tr>
+        <tr><td>0–3 min</td><td>Opening</td><td>Build 2–3 Constructors, drill the nearby deposits, scout with a buggy.</td></tr>
+        <tr><td>3–8 min</td><td>Early game</td><td>First Vehicle Plant, light tanks, grab contested deposits, first turret.</td></tr>
+        <tr><td>8–15 min</td><td>Mid game</td><td>Command Core to Tier 2. Airfield, Mech Bay or Shipyard. Upgrade drills.</td></tr>
+        <tr><td>15–25 min</td><td>Late game</td><td>Tier 3, shields, artillery lines, an experimental unit, maybe a missile silo.</td></tr>
+        <tr><td>25+ min</td><td>Endgame</td><td>Several experimentals clash. Super-weapons and all-in attacks.</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>How to win and lose</h2>
+      <div class="box"><b class="t">Skirmish victory</b>Destroy every enemy <b>building</b>. Units alone do not keep a player alive, so hiding one tank does not stall the game.</div>
+      <div class="box blue"><b class="t">Optional win rules (skirmish setup)</b><b>Command Core kill:</b> lose your Core and you lose.<br><b>Domination:</b> hold 70% of deposits for 3 minutes.<br><b>Score:</b> highest score when the timer ends.</div>
+      <div class="box red"><b class="t">Campaign</b>Each mission states its own win and lose rules on the briefing screen. There are no surprise fail states.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>5</span></div>
+</section>
+
+<!-- ============ 04 ECONOMY ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>04 · Economy</span></div>
+  <div class="kicker">04 · Economy</div>
+  <h1>One currency: credits</h1>
+  <div class="cols">
+    <div>
+      <p class="lead">Everything costs <b>credits</b>. You earn them in three ways. Having more drills means more income, and more income means a bigger army.</p>
+      <table>
+        <tr><th>Source</th><th>Income</th><th>Rule</th></tr>
+        <tr><td><b>Command Core</b></td><td>+15 / sec</td><td>Always pays. Losing it hurts badly.</td></tr>
+        <tr><td><b>Ore Drill</b></td><td>+8 to +32 / sec</td><td>Only on ore deposits. Upgradeable. This is your main income.</td></tr>
+        <tr><td><b>Salvage</b></td><td>One-time</td><td>A Constructor recycles a wreck for 25% of the unit's cost.</td></tr>
+      </table>
+      <h2>Ore Drill upgrade path</h2>
+      <table>
+        <tr><th>Level</th><th>Cost</th><th>Income</th><th>Health</th><th>Notes</th></tr>
+        <tr><td>Drill L1</td><td>600</td><td>+8</td><td>900</td><td>Build on any free deposit</td></tr>
+        <tr><td>Drill L2</td><td>+1,200</td><td>+13</td><td>1,200</td><td>Needs Command Core T2</td></tr>
+        <tr><td>Drill L3</td><td>+3,200</td><td>+20</td><td>2,000</td><td>Needs Command Core T3</td></tr>
+      </table>
+      <p class="small" style="margin-top:2mm">A destroyed drill leaves its deposit free. A Constructor can rebuild from L1.</p>
+    </div>
+    <div>
+      <h2>Final choice at L3: pick one</h2>
+      <div class="grid3">
+        <div class="card"><span class="tag">Fortified</span><br><b>+2,500</b><br>Income stays +20. Health ×4, shield, self-repair and a small point-defence gun.<br><i>Best on the front line.</i></div>
+        <div class="card"><span class="tag t2">Overdrive</span><br><b>+6,000</b><br>Income <b>+32</b>. Health is halved and it shuts down for 30 s after heavy damage.<br><i>Best in safe areas.</i></div>
+        <div class="card"><span class="tag t3">Relay</span><br><b>+2,000</b><br>Income stays +20. Doubles build radius and vision, and reveals stealth and submarines nearby.<br><i>Best for forward bases.</i></div>
+      </div>
+      <div class="box" style="margin-top:4mm"><b class="t">Simple economy rules</b>
+        <ul style="margin:0">
+          <li>No population cap stress: the cap is <b>300 units</b> (setting: 100 to 600).</li>
+          <li>Costs are paid <b>while building</b>, so a low bank slows production instead of stopping it.</li>
+          <li>Cancelling refunds 100% of what was spent.</li>
+          <li>Income is shown as a big "+62/s" next to your credits.</li>
+        </ul></div>
+      <div class="box gold"><b class="t">Why this works</b>Deposits are fixed spots on the map, so the map itself creates fights. Every drill is a target, and every upgrade is a risk.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>6</span></div>
+</section>
+
+<!-- ============ 05 BASE ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>05 · Base building</span></div>
+  <div class="kicker">05 · Base building</div>
+  <h1>Your base</h1>
+  <div class="cols">
+    <div class="c2">
+      <img class="full" src="../../../Art/Concepts/pixel/02_base.jpg" alt="">
+      <div class="cap">Target look: Command Core with helipad (centre) under a Shield Dome, Vehicle Plant (top left), Mech Bay (left), Airfield with runway (top right), Shipyard on the lake (bottom left), three Ore Drills on deposits (right), and turrets and AA launchers along the roads. True to scale.</div>
+    </div>
+    <div>
+      <h2>How building works</h2>
+      <ul>
+        <li><b>Constructors</b> build everything. Tap a Constructor, pick a building, then tap the ground.</li>
+        <li>Several Constructors on one building <b>build faster</b>.</li>
+        <li>You can build anywhere that is free and flat. There is no build-radius limit, except for the Relay bonus that applies to drills.</li>
+        <li>Buildings show a <b>ghost preview</b> with range rings before you place them.</li>
+        <li>Constructors also <b>repair</b> and <b>salvage</b>.</li>
+      </ul>
+      <h2>Constructor types</h2>
+      <table>
+        <tr><th>Unit</th><th>Made at</th><th>Note</th></tr>
+        <tr><td>Constructor</td><td>Core, Vehicle Plant</td><td>Basic ground builder</td></tr>
+        <tr><td>Naval Constructor</td><td>Shipyard</td><td>Builds on water and shores</td></tr>
+        <tr><td>Forge Mech</td><td>Mech Bay</td><td>Builds T2 buildings fast and fights</td></tr>
+        <tr><td>Air Constructor</td><td>Airfield T2</td><td>Flies, so it can build anywhere</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>7</span></div>
+</section>
+
+<!-- ============ 06 TECH ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>06 · Tech tiers</span></div>
+  <div class="kicker">06 · Tech tiers and upgrades</div>
+  <h1>Three tiers, upgraded where you stand</h1>
+  <p class="lead">There is no separate research lab. You upgrade the <b>Command Core</b> to unlock new buildings, and you upgrade each <b>factory</b> to unlock its stronger units.</p>
+  <div class="flow">
+    <div class="st" style="border-color:#9fbf6a"><span class="tag">TIER 1</span><b style="margin-top:1mm">Start</b>Vehicle Plant · Airfield · Shipyard · Ore Drill · Gun Turret · Flak Turret · Sensor Tower · Repair Bay</div><div class="ar">›</div>
+    <div class="st" style="border-color:#7aa3d6"><span class="tag t2">TIER 2</span><b style="margin-top:1mm">Core upgrade: 3,000</b>Mech Bay · Shield Dome · Artillery Emplacement · Arc Turret · Drill L2 · factory T2 upgrades</div><div class="ar">›</div>
+    <div class="st" style="border-color:#d9a65b"><span class="tag t3">TIER 3</span><b style="margin-top:1mm">Core upgrade: 8,000</b>Experimental Forge · Missile Silo · Missile Interceptor · Drill L3 and final choice</div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>Building upgrades</h2>
+      <table>
+        <tr><th>Building</th><th>Build</th><th>T2 upgrade</th><th>Unlocks</th></tr>
+        <tr><td>Command Core</td><td>start</td><td>3,000 / 8,000 (T3)</td><td>New buildings, +5 Core income per tier</td></tr>
+        <tr><td>Vehicle Plant</td><td>1,000</td><td>2,500</td><td>Heavy tanks, artillery, shield truck</td></tr>
+        <tr><td>Airfield</td><td>1,500</td><td>3,000</td><td>Bombers, heavy jets, Air Constructor</td></tr>
+        <tr><td>Shipyard</td><td>1,200</td><td>3,000</td><td>Destroyer, cruiser, battleship, hunter sub</td></tr>
+        <tr><td>Mech Bay</td><td>2,500</td><td>3,500</td><td>Bulwark, Arc Mech, Mortar Mech</td></tr>
+        <tr><td>Gun Turret</td><td>600</td><td>1,000</td><td>Becomes Heavy Gun Turret</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Unit upgrades (bought at a factory)</h2>
+      <p>Each factory has 2–3 one-time upgrades that apply to all its units. They are simple and visible:</p>
+      <table>
+        <tr><th>Factory</th><th>Example upgrades</th></tr>
+        <tr><td>Vehicle Plant</td><td>Composite Armour (+15% HP) · Smoke Launchers</td></tr>
+        <tr><td>Airfield</td><td>Afterburners (+20% speed) · Flares (dodge 1st missile)</td></tr>
+        <tr><td>Shipyard</td><td>Sonar Suite (see subs further) · Torpedo Nets</td></tr>
+        <tr><td>Mech Bay</td><td>Jump Jets (hop cliffs) · Reactive Plating</td></tr>
+      </table>
+      <div class="box gold" style="margin-top:3mm"><b class="t">Rule of thumb</b>Tier 2 at about 8–10 minutes and Tier 3 at about 15–18 minutes in a normal-speed skirmish.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>8</span></div>
+</section>
+
+<!-- ============ 07 COUNTERS ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>07 · Counters</span></div>
+  <div class="kicker">07 · Who beats who</div>
+  <h1>Every unit has a job, and a weakness</h1>
+  <p class="lead">No unit wins alone. Mixing your army is how you win. The tables below are the whole balance idea on one page.</p>
+  <div class="cols">
+    <div>
+      <h2>Armour types</h2>
+      <table>
+        <tr><th>Type</th><th>Examples</th><th>Hurt most by</th></tr>
+        <tr><td>Infantry</td><td>Rifle Squad, Rocket Squad</td><td>Flame, machine guns, artillery</td></tr>
+        <tr><td>Light</td><td>Buggy, drones, Strider</td><td>Light guns, flak</td></tr>
+        <tr><td>Armoured</td><td>Tanks, mechs</td><td>Rail guns, rockets, bombers</td></tr>
+        <tr><td>Air</td><td>Jets, helicopters, airships</td><td>Flak, SAM, interceptors</td></tr>
+        <tr><td>Naval</td><td>Ships</td><td>Torpedoes, missiles, battleships</td></tr>
+        <tr><td>Submerged</td><td>Submarines</td><td>Destroyers, Sea Skimmer (only these can see and hit them)</td></tr>
+        <tr><td>Structure</td><td>All buildings</td><td>Artillery, bombers, Scorcher</td></tr>
+        <tr><td>Experimental</td><td>Super units</td><td>Massed rail guns, focused bombers, other experimentals</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Counter chart</h2>
+      <table class="wheel">
+        <tr><th>If the enemy builds…</th><th>…answer with</th></tr>
+        <tr><td>Lots of light tanks</td><td>Battle Tanks, Arc Mech, Gun Turrets</td></tr>
+        <tr><td>Heavy tanks and mechs</td><td>Rail Tank, Rocket Squads, Stealth Bomber</td></tr>
+        <tr><td>Aircraft</td><td>Flak Turret, SAM Truck, Interceptors, Sky Lancer</td></tr>
+        <tr><td>Artillery lines</td><td>Fast raiders (Skimmer, Strider), gunships</td></tr>
+        <tr><td>Warships</td><td>Attack Subs, Sea Skimmer jets</td></tr>
+        <tr><td>Submarines</td><td>Destroyers, Sensor Tower near shore</td></tr>
+        <tr><td>Turtle base with shields</td><td>Howitzers, Mortar Mech, missile silo, EMP power</td></tr>
+        <tr><td>An experimental</td><td>Spread out, focus fire with Rail Tanks and bombers, or build your own</td></tr>
+      </table>
+      <div class="box blue" style="margin-top:3mm"><b class="t">Design rule</b>Every unit card in-game shows three icons: <b>Good against</b>, <b>Weak against</b> and its <b>role</b>. Players never need a wiki.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>9</span></div>
+</section>
+
+<!-- ============ 08 LAND ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>08 · Land units</span></div>
+  <div class="kicker">08 · Land units · Vehicle Plant</div>
+  <h1>Land units (12)</h1>
+  <div class="cols">
+    <div>
+      <img class="full" src="../../../Art/Concepts/pixel/03_land.jpg" alt="">
+      <div class="cap">Vehicle yard, true to scale (note the soldiers). Numbered left to right, top to bottom, matching the table.</div>
+      <div class="box" style="margin-top:3mm"><b class="t">Hover units</b>Skimmer Tank and Hover Lander float on air cushions. They cross <b>shallow and deep water</b>, but not lava or cliffs. They are fast but lightly armoured.</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>#</th><th>Unit</th><th>Tier</th><th>Cost</th><th>Role</th><th>Good vs / Weak vs</th></tr>
+        <tr><td class="n">1</td><td>Scout Buggy</td><td><span class="tag">T1</span></td><td>300</td><td>Fast scout, big vision</td><td>Infantry / everything</td></tr>
+        <tr><td class="n">2</td><td>Light Tank</td><td><span class="tag">T1</span></td><td>450</td><td>Cheap early fighter</td><td>Light, infantry / Armoured</td></tr>
+        <tr><td class="n">3</td><td>Skimmer Tank</td><td><span class="tag">T1</span></td><td>550</td><td>Hover tank, crosses water</td><td>Light, ships / Armoured</td></tr>
+        <tr><td class="n">4</td><td>Battle Tank</td><td><span class="tag t2">T2</span></td><td>900</td><td>Main frontline tank</td><td>Most ground / Rail, bombers</td></tr>
+        <tr><td class="n">5</td><td>Rail Tank</td><td><span class="tag t2">T2</span></td><td>1,600</td><td>Long-range armour killer</td><td>Armoured, exp. / Infantry, air</td></tr>
+        <tr><td class="n">6</td><td>Rocket Truck</td><td><span class="tag t2">T2</span></td><td>1,100</td><td>Area rocket barrage</td><td>Groups / Fast raiders</td></tr>
+        <tr><td class="n">7</td><td>Howitzer</td><td><span class="tag t2">T2</span></td><td>1,300</td><td>Very long-range siege gun</td><td>Buildings / Up close</td></tr>
+        <tr><td class="n">8</td><td>SAM Truck</td><td><span class="tag">T1</span></td><td>700</td><td>Mobile anti-air</td><td>Air / Ground</td></tr>
+        <tr><td class="n">9</td><td>Constructor</td><td><span class="tag">T1</span></td><td>500</td><td>Builds, repairs, salvages</td><td>– / Everything</td></tr>
+        <tr><td class="n">10</td><td>Repair Truck</td><td><span class="tag">T1</span></td><td>600</td><td>Heals nearby vehicles</td><td>Support / Raids</td></tr>
+        <tr><td class="n">11</td><td>Shield Truck</td><td><span class="tag t2">T2</span></td><td>1,400</td><td>Moving shield bubble</td><td>Artillery / EMP, melee</td></tr>
+        <tr><td class="n">12</td><td>Hover Lander</td><td><span class="tag">T1</span></td><td>800</td><td>Carries 4 vehicles over water</td><td>Transport / Any attack</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>10</span></div>
+</section>
+
+<!-- ============ 09 MECHS ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>09 · Mechs and infantry</span></div>
+  <div class="kicker">09 · Mechs (Mech Bay) and infantry (Command Core)</div>
+  <h1>Mechs and infantry (10)</h1>
+  <div class="cols">
+    <div>
+      <img class="full" src="../../../Art/Concepts/pixel/04_mechs.jpg" alt="">
+      <div class="cap">Row 1: Strider, Sky Lancer, Scorcher, Arc Mech. Row 2: Mortar Mech, Bulwark, Forge Mech. Row 3: Rifle Squad, Rocket Squad, Stinger Team.</div>
+      <div class="box blue" style="margin-top:3mm"><b class="t">Why mechs?</b>Mechs <b>walk over rough ground</b> (rubble, rocky slopes) that slows tanks, and turn on the spot. They cost more than tanks of the same tier.</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>#</th><th>Unit</th><th>Tier</th><th>Cost</th><th>Role</th><th>Good vs / Weak vs</th></tr>
+        <tr><td class="n">1</td><td>Strider</td><td><span class="tag t2">T2</span></td><td>700</td><td>Fast mech raider, hits air too</td><td>Light, air / Armoured</td></tr>
+        <tr><td class="n">2</td><td>Sky Lancer</td><td><span class="tag t2">T2</span></td><td>900</td><td>Heavy anti-air missiles</td><td>Air / Ground</td></tr>
+        <tr><td class="n">3</td><td>Scorcher</td><td><span class="tag t2">T2</span></td><td>1,000</td><td>Flamethrower, short range</td><td>Infantry, buildings / Range</td></tr>
+        <tr><td class="n">4</td><td>Arc Mech</td><td><span class="tag t2">T2+</span></td><td>1,300</td><td>Lightning jumps between enemies</td><td>Groups / Lone heavies</td></tr>
+        <tr><td class="n">5</td><td>Mortar Mech</td><td><span class="tag t2">T2+</span></td><td>1,100</td><td>Arcing shells over walls</td><td>Turrets / Fast units</td></tr>
+        <tr><td class="n">6</td><td>Bulwark</td><td><span class="tag t2">T2+</span></td><td>2,000</td><td>Heavy assault mech</td><td>Armoured / Rail, bombers</td></tr>
+        <tr><td class="n">7</td><td>Forge Mech</td><td><span class="tag t2">T2</span></td><td>1,200</td><td>Combat builder and repairer</td><td>Support / Anti-armour</td></tr>
+        <tr><td class="n">8</td><td>Rifle Squad</td><td><span class="tag">T1</span></td><td>150</td><td>Cheap screen, hides in forest</td><td>Infantry / Flame, artillery</td></tr>
+        <tr><td class="n">9</td><td>Rocket Squad</td><td><span class="tag">T1</span></td><td>250</td><td>Anti-tank rockets</td><td>Armoured / Infantry</td></tr>
+        <tr><td class="n">10</td><td>Stinger Team</td><td><span class="tag">T1</span></td><td>250</td><td>Shoulder anti-air</td><td>Helicopters / Ground</td></tr>
+      </table>
+      <p class="small" style="margin-top:2mm">T2+ means the unit needs the Mech Bay upgraded to T2.</p>
+      <div class="box"><b class="t">Infantry rules</b>Infantry are trained at the <b>Command Core</b> in groups of 4. In forests they take <b>−40% damage</b> and are hidden until enemies come close. Infantry can ride in Tiltrotors and Hover Landers.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>11</span></div>
+</section>
+
+<!-- ============ 10 AIR ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>10 · Air units</span></div>
+  <div class="kicker">10 · Air units · Airfield</div>
+  <h1>Air units (11)</h1>
+  <div class="cols">
+    <div>
+      <img class="full" src="../../../Art/Concepts/pixel/05_air.jpg" alt="">
+      <div class="cap">All 11 aircraft at an airfield, true to scale. On the apron: Air Constructor, Recon Drone, Jammer Drone. Over the grass: Light Gunship, Attack Helicopter, Tiltrotor, Interceptors, Sea Skimmer, Stealth Bomber and Missile Airship.</div>
+      <div class="box blue" style="margin-top:3mm"><b class="t">Air rules</b>Aircraft ignore terrain. Jets must keep moving and circle their target. Helicopters can hover. Aircraft <b>return to an Airfield or Carrier to rearm</b> (bombers) or heal (all), and this happens automatically.</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>#</th><th>Unit</th><th>Tier</th><th>Cost</th><th>Role</th><th>Good vs / Weak vs</th></tr>
+        <tr><td class="n">1</td><td>Recon Drone</td><td><span class="tag">T1</span></td><td>250</td><td>Cheap flying eyes</td><td>Scouting / Any AA</td></tr>
+        <tr><td class="n">2</td><td>Jammer Drone</td><td><span class="tag t2">T2</span></td><td>800</td><td>Cuts enemy turret range by 25% nearby</td><td>Support / Interceptors</td></tr>
+        <tr><td class="n">3</td><td>Light Gunship</td><td><span class="tag">T1</span></td><td>500</td><td>Fast harasser</td><td>Light, infantry / AA</td></tr>
+        <tr><td class="n">4</td><td>Attack Helicopter</td><td><span class="tag t2">T2</span></td><td>1,000</td><td>Rockets vs armour</td><td>Armoured / AA</td></tr>
+        <tr><td class="n">5</td><td>Tiltrotor</td><td><span class="tag">T1</span></td><td>700</td><td>Carries 4 small units or 1 tank</td><td>Transport / AA</td></tr>
+        <tr><td class="n">6</td><td>Interceptor</td><td><span class="tag">T1</span></td><td>800</td><td>Air-to-air jet</td><td>Air / Can't hit ground</td></tr>
+        <tr><td class="n">7</td><td>Heavy Interceptor</td><td><span class="tag t2">T2</span></td><td>1,500</td><td>Tough air-superiority jet</td><td>Air, exp. air / Ground</td></tr>
+        <tr><td class="n">8</td><td>Sea Skimmer</td><td><span class="tag t2">T2</span></td><td>1,800</td><td>Hits air and submarines</td><td>Air, subs / Flak</td></tr>
+        <tr><td class="n">9</td><td>Stealth Bomber</td><td><span class="tag t2">T2</span></td><td>2,200</td><td>Invisible until it drops</td><td>Buildings, armour / Sensors</td></tr>
+        <tr><td class="n">10</td><td>Missile Airship</td><td><span class="tag t2">T2</span></td><td>2,500</td><td>Slow long-range missiles</td><td>Groups, ships / Jets</td></tr>
+        <tr><td class="n">11</td><td>Air Constructor</td><td><span class="tag t2">T2</span></td><td>900</td><td>Builds anywhere</td><td>– / Everything</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>12</span></div>
+</section>
+
+<!-- ============ 11 NAVAL ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>11 · Naval units</span></div>
+  <div class="kicker">11 · Naval units · Shipyard</div>
+  <h1>Naval units (9)</h1>
+  <div class="cols">
+    <div>
+      <img class="full" src="../../../Art/Concepts/pixel/06_naval.jpg" alt="">
+      <div class="cap">All 9 ships in a harbour, true to scale: the Carrier (top) dwarfs everything. The Naval Constructor is at the pier. In the water: Battleship, Destroyer, AA Cruiser, Missile Corvette, Patrol Boat, Attack Sub and Hunter Sub.</div>
+      <div class="box blue" style="margin-top:3mm"><b class="t">Sea rules</b>Ships stay on water. Water maps have <b>ore deposits offshore</b>, so the navy fights for income too. <b>Submarines are invisible</b> unless a Destroyer, Sea Skimmer, Sensor Tower or Relay Drill is near.</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>#</th><th>Unit</th><th>Tier</th><th>Cost</th><th>Role</th><th>Good vs / Weak vs</th></tr>
+        <tr><td class="n">1</td><td>Patrol Boat</td><td><span class="tag">T1</span></td><td>400</td><td>Fast early boat</td><td>Light boats / Subs</td></tr>
+        <tr><td class="n">2</td><td>Missile Corvette</td><td><span class="tag">T1</span></td><td>900</td><td>Missiles vs ships and shore</td><td>Ships / Subs, jets</td></tr>
+        <tr><td class="n">3</td><td>Destroyer</td><td><span class="tag t2">T2</span></td><td>1,500</td><td>Sub hunter, sonar</td><td>Subs / Battleship</td></tr>
+        <tr><td class="n">4</td><td>AA Cruiser</td><td><span class="tag t2">T2</span></td><td>1,800</td><td>Fleet air shield</td><td>Air / Subs</td></tr>
+        <tr><td class="n">5</td><td>Battleship</td><td><span class="tag t2">T2</span></td><td>3,500</td><td>Huge guns, shore bombardment</td><td>Ships, shore / Subs, bombers</td></tr>
+        <tr><td class="n">6</td><td>Attack Sub</td><td><span class="tag">T1</span></td><td>800</td><td>Hidden torpedo boat</td><td>Ships / Destroyers</td></tr>
+        <tr><td class="n">7</td><td>Hunter Sub</td><td><span class="tag t2">T2</span></td><td>2,000</td><td>Deep, heavy torpedoes</td><td>Big ships / Destroyers</td></tr>
+        <tr><td class="n">8</td><td>Naval Constructor</td><td><span class="tag">T1</span></td><td>600</td><td>Builds on water and shore</td><td>– / Everything</td></tr>
+        <tr><td class="n">9</td><td>Carrier</td><td><span class="tag t3">T3</span></td><td>6,000</td><td>Mobile airfield, 8 jets</td><td>Map control / Subs</td></tr>
+      </table>
+      <div class="box gold" style="margin-top:3mm"><b class="t">No water? No navy.</b>Land-only maps hide the Shipyard button. Hover units, Sea Skimmers and the Leviathan still make mixed maps exciting.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>13</span></div>
+</section>
+
+<!-- ============ 12 EXPERIMENTAL ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>12 · Experimental units</span></div>
+  <div class="kicker">12 · Experimental units · Experimental Forge (Tier 3)</div>
+  <h1>Experimentals (5)</h1>
+  <div class="cols">
+    <div class="c2">
+      <img class="full" src="../../../Art/Concepts/pixel/07_experimental.jpg" alt="">
+      <div class="cap">Normal tanks and farmhouses show the true scale. Top: Hive Mothership (left), Skyhold Fortress (centre), Leviathan surfacing (right). Middle: Colossus Walker (left), Titan Tank (right).</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>Unit</th><th>Cost</th><th>What makes it special</th></tr>
+        <tr><td><b>Colossus Walker</b></td><td>16,000</td><td>Four legs. Walks over water and cliffs. Siege cannon plus missiles.</td></tr>
+        <tr><td><b>Titan Tank</b></td><td>14,000</td><td>Five turrets that aim on their own. Crushes small units.</td></tr>
+        <tr><td><b>Skyhold Fortress</b></td><td>18,000</td><td>Flying gun platform. Repairs aircraft near it.</td></tr>
+        <tr><td><b>Leviathan</b></td><td>15,000</td><td>Submersible. Surfaces to fire missile salvos at shore targets.</td></tr>
+        <tr><td><b>Hive Mothership</b></td><td>13,000</td><td>Launches 12 attack drones and rebuilds them for free.</td></tr>
+      </table>
+      <div class="box red" style="margin-top:3mm"><b class="t">Fair-play rules</b>
+        <ul style="margin:0">
+          <li>A maximum of <b>3 experimentals</b> per player at once (a setting).</li>
+          <li>When one starts building, all players get a <b>warning</b> and see its location.</li>
+          <li>Each has a <b>weak spot</b>: slow turning, no AA, or blindness without escorts.</li>
+          <li>Destroying one gives a large <b>salvage</b> wreck.</li>
+        </ul></div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>14</span></div>
+</section>
+
+<!-- ============ 13 DEFENCES ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>13 · Defences</span></div>
+  <div class="kicker">13 · Defences and super-weapons</div>
+  <h1>Hold the line</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>Building</th><th>Tier</th><th>Cost</th><th>What it does</th></tr>
+        <tr><td>Gun Turret</td><td><span class="tag">T1</span></td><td>600</td><td>All-round ground defence. Upgrades to Heavy Gun.</td></tr>
+        <tr><td>Flak Turret</td><td><span class="tag">T1</span></td><td>700</td><td>Fast anti-air bursts</td></tr>
+        <tr><td>Sensor Tower</td><td><span class="tag">T1</span></td><td>500</td><td>Huge vision. Reveals stealth and subs.</td></tr>
+        <tr><td>Repair Bay</td><td><span class="tag">T1</span></td><td>800</td><td>Units parked on it heal fast</td></tr>
+        <tr><td>Artillery Emplacement</td><td><span class="tag t2">T2</span></td><td>1,800</td><td>Very long-range ground fire</td></tr>
+        <tr><td>Arc Turret</td><td><span class="tag t2">T2</span></td><td>1,500</td><td>Chain lightning vs groups</td></tr>
+        <tr><td>Shield Dome</td><td><span class="tag t2">T2</span></td><td>3,000</td><td>Bubble that blocks shells and missiles until it breaks, then recharges</td></tr>
+        <tr><td>Missile Interceptor</td><td><span class="tag t3">T3</span></td><td>4,000</td><td>Shoots down strategic missiles (stores 2)</td></tr>
+        <tr><td>Strategic Missile Silo</td><td><span class="tag t3">T3</span></td><td>15,000</td><td>Builds missiles (6,000 each, 90 s). A huge blast anywhere.</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Super-weapon rules</h2>
+      <div class="box red"><b class="t">Strategic missile</b>When a missile launches, every player sees a <b>10-second warning</b> and a target circle. Missile Interceptors in range fire automatically. The blast destroys most T1 and T2 units and badly damages experimentals and Shield Domes.</div>
+      <h2>Support powers (new)</h2>
+      <p>You earn <b>Command Points</b> by destroying enemies and holding deposits. Spend them on:</p>
+      <div class="grid4">
+        <div class="card"><b>Recon Sweep</b><br>Reveal an area for 15 s.<br><span class="tag">2 pts</span></div>
+        <div class="card"><b>Supply Drop</b><br>+1,500 credits.<br><span class="tag">3 pts</span></div>
+        <div class="card"><b>EMP Strike</b><br>Stuns units and shields for 8 s.<br><span class="tag t2">5 pts</span></div>
+        <div class="card"><b>Air Strike</b><br>Bomber run on a line.<br><span class="tag t3">6 pts</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>15</span></div>
+</section>
+
+<!-- ============ 14 COMBAT RULES ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>14 · Combat rules</span></div>
+  <div class="kicker">14 · Combat rules</div>
+  <h1>Simple rules, rich battles</h1>
+  <div class="grid3">
+    <div class="card"><b>Fog of war</b><br>Black means never seen. Grey means seen before, showing the last-known buildings only. Units and buildings have a vision radius.</div>
+    <div class="card"><b>Terrain</b><br><b>Roads:</b> +20% vehicle speed. <b>Forest:</b> infantry hidden and −40% damage taken, vehicles −30% speed. <b>Hills:</b> +25% vision and range. <b>Rubble:</b> slows tanks but not mechs.</div>
+    <div class="card"><b>Water layers</b><br>There is <b>shallow</b> water (hover and some mechs), <b>deep</b> water (ships, hover) and <b>underwater</b> (subs and the Leviathan). Lava blocks everything except air and the Colossus.</div>
+    <div class="card"><b>Veterancy</b><br>Kills give ranks: <b>Veteran</b>, <b>Elite</b> and <b>Hero</b>. Each rank gives +10% damage and +10% health, plus self-repair at Hero. Ranks show as chevrons.</div>
+    <div class="card"><b>Shields</b><br>Shields soak damage first and recharge after 5 s without hits. EMP drops them instantly. Shields show as a soft blue bubble.</div>
+    <div class="card"><b>Weather and night</b><br>A <b>storm</b> gives −40% vision and grounds jets. <b>Night</b> gives −30% vision, and gunfire briefly reveals units. These are campaign and skirmish options.</div>
+    <div class="card"><b>Wrecks</b><br>Destroyed vehicles leave wrecks for 3 minutes. Wrecks block small units a little and can be salvaged. Wrecks look darker so they never get confused with live units.</div>
+    <div class="card"><b>Stealth</b><br>The Stealth Bomber and submarines are invisible unless a detector is near: Sensor Tower, Relay Drill, Destroyer or Jammer Drone.</div>
+    <div class="card"><b>Friendly fire</b><br>Off by default for easier play. It is a "Realistic" option in skirmish settings.</div>
+  </div>
+  <div class="box blue" style="margin-top:4mm"><b class="t">Readability first</b>Health bars, selection rings and orders always draw <b>on top of</b> smoke and explosions. At strategic zoom every unit becomes a clean icon (see page 18).</div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>16</span></div>
+</section>
+
+<!-- ============ 15 CONTROLS / HUD ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>15 · Controls and HUD</span></div>
+  <div class="kicker">15 · Controls and screen layout</div>
+  <h1>Built for touch</h1>
+  <div class="cols">
+    <div class="c2">
+      <div class="hud">
+        <img src="../../../Art/Concepts/pixel/09_gameplay.jpg" alt="">
+        <div class="o topbar"><span>◆ <b>4,250</b> +62/s</span><span>Units <b>86</b>/300</span><span>CP <b>4</b></span><span>12:40</span><span style="margin-left:auto">⏸ Pause</span><span>Speed ×1</span><span>☰</span></div>
+        <div class="o alert">⚠ Drill under attack: tap to jump</div>
+        <div class="o mini"><i style="left:5mm;top:14mm;background:#4c8ee8"></i><i style="left:8mm;top:12mm;background:#4c8ee8"></i><i style="left:20mm;top:6mm;background:#e85a4c"></i><i style="left:23mm;top:8mm;background:#e85a4c"></i><i style="left:14mm;top:10mm;background:#d6e8a8"></i></div>
+        <div class="o cmd"><span>Stop</span><span>Attack-Move</span><span>Guard</span><span>Patrol</span><span>Hold</span><span>Same type</span></div>
+        <div class="o build">
+          <div class="tabs"><span class="on">Build</span><span>Units</span><span>Upgrades</span><span>Powers</span></div>
+          <div class="icons"><span>Drill</span><span>Vehicle Plant</span><span>Airfield</span><span>Shipyard</span><span>Gun Turret</span><span>Flak</span><span>Sensor</span><span>Repair Bay</span></div>
+        </div>
+        <div class="callout" style="left:1mm;top:8mm">1</div>
+        <div class="callout" style="right:26mm;top:15mm">2</div>
+        <div class="callout" style="left:1mm;bottom:25mm">3</div>
+        <div class="callout" style="left:52mm;bottom:8mm">4</div>
+        <div class="callout" style="right:65mm;bottom:20mm">5</div>
+      </div>
+      <div class="cap">Mock-up drawn over a target-look image. 1 Resource bar · 2 Alerts · 3 Minimap · 4 Command bar · 5 Build and production panel.</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>Action</th><th>Touch input</th></tr>
+        <tr><td>Select</td><td>Tap a unit</td></tr>
+        <tr><td>Box select</td><td>Hold the select button and drag, or two-finger drag</td></tr>
+        <tr><td>Select same type</td><td>Double-tap a unit</td></tr>
+        <tr><td>Move</td><td>Tap the ground</td></tr>
+        <tr><td>Attack</td><td>Tap an enemy</td></tr>
+        <tr><td>Attack-move</td><td>Command bar, then tap the ground</td></tr>
+        <tr><td>Camera</td><td>One-finger drag pans. Pinch zooms.</td></tr>
+        <tr><td>Groups</td><td>Long-press a group slot to save, tap to recall</td></tr>
+        <tr><td>Waypoints</td><td>Hold "+" and tap several points</td></tr>
+        <tr><td>Rally point</td><td>Select a factory, then tap the ground</td></tr>
+      </table>
+      <div class="box" style="margin-top:3mm"><b class="t">Comfort options</b>UI scale, a left-handed layout, bigger hit-boxes, vibration on/off, colour-blind team colours.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>17</span></div>
+</section>
+
+<!-- ============ 16 QoL ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>16 · Quality of life</span></div>
+  <div class="kicker">16 · Quality-of-life features</div>
+  <h1>Less tapping, more strategy</h1>
+  <p class="lead">A phone has no mouse and keyboard, so we add smart helpers that keep the player focused on decisions.</p>
+  <div class="grid3">
+    <div class="card"><b>Strategic zoom</b><br>Pinch all the way out to see the whole map. Units turn into <b>icons by type</b> (tank, mech, jet, ship, experimental) in team colours, and every order still works.</div>
+    <div class="card"><b>Tactical pause</b><br>Pause and give orders, then resume. Game speed can be ×0.5, ×1, ×1.5 or ×2.</div>
+    <div class="card"><b>Repeat build</b><br>Set any factory to loop its queue forever, with an optional credit floor such as "keep 1,000 in the bank".</div>
+    <div class="card"><b>Base blueprints</b><br>Save a group of buildings (for example "4 turrets + shield") and place the whole group with one tap. Constructors build it in order.</div>
+    <div class="card"><b>Idle alerts</b><br>A small badge shows idle Constructors and idle factories. Tap it to jump to them.</div>
+    <div class="card"><b>Auto-drill</b><br>Tell a Constructor "expand" and it builds drills on the nearest safe free deposits.</div>
+    <div class="card"><b>Smart retreat</b><br>A unit option sends units home to repair below 30% health.</div>
+    <div class="card"><b>Formations</b><br>Groups keep their shape. Fast units slow down to stay with the group when "keep together" is on.</div>
+    <div class="card"><b>Battle report</b><br>After each match: an income graph, a units-lost chart and your most valuable unit.</div>
+  </div>
+  <div class="box gold" style="margin-top:4mm"><b class="t">Tutorial approach</b>The first 5 campaign missions are the tutorial. Each teaches one thing with a short tip card. There are no long text walls. Hints can be turned off.</div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>18</span></div>
+</section>
+
+<!-- ============ 17 AI ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>17 · Enemy AI</span></div>
+  <div class="kicker">17 · Enemy AI</div>
+  <h1>An opponent that feels like a player</h1>
+  <p class="lead">This is single-player only, so the AI <b>is</b> the opponent. It must be smart, readable and fun to beat.</p>
+  <div class="cols">
+    <div>
+      <h2>What the AI does</h2>
+      <ul>
+        <li><b>Builds an economy:</b> takes deposits, upgrades drills and protects them.</li>
+        <li><b>Scouts first:</b> it sends scouts before big attacks and reacts to what it sees.</li>
+        <li><b>Counters you:</b> if you mass aircraft, it builds more anti-air.</li>
+        <li><b>Attacks in groups:</b> it never feeds units one by one, retreats damaged groups, and flanks.</li>
+        <li><b>Defends:</b> it pulls units back to a base under attack and builds turrets at contested drills.</li>
+        <li><b>Uses everything:</b> transports, subs, support powers and experimentals.</li>
+      </ul>
+      <h2>Difficulty levels</h2>
+      <table>
+        <tr><th>Level</th><th>How it changes</th></tr>
+        <tr><td>Recruit</td><td>Slow decisions, no harassment, 70% income</td></tr>
+        <tr><td>Regular</td><td>Normal decisions, fair income</td></tr>
+        <tr><td>Veteran</td><td>Faster, counters you, multi-prong attacks</td></tr>
+        <tr><td>Commander</td><td>Best tactics, perfect counters</td></tr>
+        <tr><td>Warlord</td><td>Commander + 150% income (for experts)</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>AI personalities (doctrines)</h2>
+      <div class="grid3" style="grid-template-columns:1fr 1fr">
+        <div class="card"><b>Blitz</b><br>Early rushes with light tanks and buggies.</div>
+        <div class="card"><b>Fortress</b><br>Turrets, shields and artillery. Slow and strong.</div>
+        <div class="card"><b>Sky Lord</b><br>Air-heavy, with bombers and gunships.</div>
+        <div class="card"><b>Admiral</b><br>Naval control and shore bombardment.</div>
+        <div class="card"><b>Engineer</b><br>Big economy, racing to experimentals.</div>
+        <div class="card"><b>Balanced</b><br>Adapts to whatever you do.</div>
+      </div>
+      <div class="box blue" style="margin-top:3mm"><b class="t">Allies too</b>In skirmish you can have AI allies. Give them simple orders with buttons: <b>Attack here</b>, <b>Defend me</b>, <b>Expand</b>, <b>Send units</b>.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>19</span></div>
+</section>
+
+<!-- ============ 18 MODES ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>18 · Game modes</span></div>
+  <div class="kicker">18 · Game modes (all single-player, all offline)</div>
+  <h1>Many ways to play alone</h1>
+  <div class="grid3">
+    <div class="card"><span class="tag">Launch</span><br><b>Campaign</b><br>50 story missions in 5 chapters. Stars, unlocks and a replay hook in every mission.</div>
+    <div class="card"><span class="tag">Launch</span><br><b>Skirmish</b><br>You against up to <b>7 AI</b> players, with free-for-all or teams. Choose the map, starting credits, tech level, unit cap, win rule, weather and AI doctrines.</div>
+    <div class="card"><span class="tag">Launch</span><br><b>Survival</b><br>Defend against growing waves that mix all domains. There's a leaderboard (offline local best) and wave modifiers.</div>
+    <div class="card"><span class="tag t2">Launch</span><br><b>Challenges</b><br>30 short puzzles such as "Win with only 10 hover tanks" or "Survive 5 minutes with no Core". 3 stars each.</div>
+    <div class="card"><span class="tag t2">Launch</span><br><b>Sandbox</b><br>Spawn any unit for either side, change speed and test battles. Great for fun and for balancing.</div>
+    <div class="card"><span class="tag t3">Update 1</span><br><b>Map editor and mods</b><br>Paint terrain, place deposits and set the AI. Units are data files, so players can add their own units offline.</div>
+  </div>
+  <div class="box" style="margin-top:4mm"><b class="t">Progress and rewards (single-player)</b>
+    <ul style="margin:0">
+      <li>Campaign stars unlock <b>skirmish maps</b>, <b>challenge packs</b> and <b>cosmetic team colours and insignia</b>.</li>
+      <li>All units are available in skirmish from the start. Unlocks are never power.</li>
+      <li>Saves: <b>save anywhere</b> in any mode, plus an autosave every 3 minutes.</li>
+    </ul></div>
+  <div class="box red"><b class="t">Not in scope</b>No online multiplayer, no accounts, no chat, no live-service events. This keeps the game simple to build and fully offline.</div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>20</span></div>
+</section>
+
+<!-- ============ 19 CAMPAIGN ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>19 · Campaign</span></div>
+  <div class="kicker">19 · Campaign</div>
+  <h1>The War for Veyra</h1>
+  <p class="lead">On the frontier world of <b>Veyra</b>, the <b>Frontier Defence Force</b> (the player, blue) protects mining colonies from the <b>Iron Dominion</b> (red), which wants the rare crystal ore. Late in the war, an ancient <b>Autonomous Network</b> of machines wakes up and attacks both sides.</p>
+  <table>
+    <tr><th style="width:17%">Chapter</th><th style="width:6%">Missions</th><th style="width:22%">Teaches</th><th>Mission names</th></tr>
+    <tr><td><b>I · First Contact</b><br><span class="small">green forests</span></td><td>01–10</td><td>Building, drills, light units, turrets</td><td>Wake-up Call · First Drill · Command Core · Broken Convoy · The Ridge · Silent Watch · Hold the Bridge · Lost Engineers · Counterbattery · Outpost Alpha</td></tr>
+    <tr><td><b>II · Iron Frontier</b><br><span class="small">desert and quarries</span></td><td>11–20</td><td>Tier 2, heavy tanks, artillery, mechs, drill upgrades</td><td>Red Dust Run · Supply Cut · Steel Rain · The Foundry · Sandstorm · Siege Line · Walking Steel · River Crossing · The Long Barrel · Iron Gate</td></tr>
+    <tr><td><b>III · Skies of War</b><br><span class="small">mountains, storms</span></td><td>21–30</td><td>Airfield, jets, bombers, transports, stealth</td><td>Runway One · Eyes Above · First Sortie · Ground Support · Night Lantern · Rotor Rescue · Storm Front · The Bomber Line · Sky Fortress · Air Superiority</td></tr>
+    <tr><td><b>IV · Blue Coast</b><br><span class="small">islands, harbours</span></td><td>31–40</td><td>Shipyard, subs, hover landings, carriers</td><td>Coastline · Fast Water · Escort Duty · Silent Depths · Carrier Shadow · Island Chain · Broadside · Missile Tide · Port of No Return · Blue Coast Offensive</td></tr>
+    <tr><td><b>V · Last Offensive</b><br><span class="small">snow, volcanic ruins</span></td><td>41–50</td><td>Tier 3, experimentals, missile silo, all domains</td><td>Ghost Signal · Machine Swarm · Power Core · The Dead City · Titan Protocol · Nuclear Option · Split Front · The Long March · Black Sun · Dawn of War</td></tr>
+  </table>
+  <div class="cols" style="margin-top:3mm">
+    <div class="box"><b class="t">Every mission has</b>A 3-line briefing · 1 main goal · 1–2 optional goals · 1 special twist (convoy, storm, boss, night, split front…) · clear win and lose rules.</div>
+    <div class="box blue"><b class="t">Stars</b>★ Win · ★★ Win plus one optional goal · ★★★ Win plus a challenge (time, low losses or no Core damage).</div>
+    <div class="box gold"><b class="t">Length</b>10–20 minutes per mission and 25+ for bosses. About <b>12–15 hours</b> in total.</div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>21</span></div>
+</section>
+
+<!-- ============ 20 WORLD ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>20 · World and maps</span></div>
+  <div class="kicker">20 · World and maps</div>
+  <h1>Five biomes</h1>
+  <div class="cols">
+    <div class="c2">
+      <img class="full" src="../../../Art/Concepts/pixel/08_biomes.jpg" alt="">
+      <div class="cap">From top: Temperate forest · Desert canyon · Snow mountains · Tropical coast · Volcanic wasteland.</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>Biome</th><th>Gameplay flavour</th></tr>
+        <tr><td>Forest</td><td>Lots of cover for infantry. Narrow roads.</td></tr>
+        <tr><td>Desert</td><td>Open ground suits long range. Sandstorms.</td></tr>
+        <tr><td>Snow</td><td>Frozen lakes (thin ice breaks under heavy units).</td></tr>
+        <tr><td>Coast</td><td>Islands, offshore ore and naval battles.</td></tr>
+        <tr><td>Volcanic</td><td>Lava rivers block paths. Air and the Colossus shine.</td></tr>
+      </table>
+      <h2>Map rules</h2>
+      <ul>
+        <li>Map sizes: Small (2–4 players), Medium (4–6) and Large (6–8).</li>
+        <li>Each start has <b>3–4 safe deposits</b>. More deposits sit in contested middle ground.</li>
+        <li>Neutral props include bridges (destroyable), ruins and old turrets.</li>
+        <li>Launch target: <b>24 skirmish maps</b> plus 50 campaign maps.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>22</span></div>
+</section>
+
+<!-- ============ 21 ART ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>21 · Art direction (locked)</span></div>
+  <div class="kicker">21 · Art direction · LOCKED</div>
+  <h1>True-to-scale 3D with a pixel filter</h1>
+  <p class="lead">The locked look is a real game screenshot, not a painting: simple 3D models, a fixed angled camera, real-world scale, hard sun shadows and calm colours. A <b>pixel filter</b> on top gives the crisp, high-res pixel feel. Look and feel are inspired by modern PC RTS games such as <i>Ebbtide</i>.</p>
+  <div class="cols">
+    <div>
+      <img class="full" src="../../../Art/Concepts/pixel/11_style_lock.jpg" alt="" style="height:62mm;object-fit:cover">
+      <div class="cap"><b>Style lock image.</b> Every new asset is checked against this.</div>
+      <img class="full" src="../../../Art/Concepts/pixel/10_scale.jpg" alt="" style="margin-top:2mm;height:44mm;object-fit:cover;object-position:center 65%">
+      <div class="cap"><b>Scale chart:</b> soldier · jeep · tank · mech · house · factory · experimental walker.</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>Rule</th><th>Do</th><th>Don't</th></tr>
+        <tr><td>Camera</td><td>Orthographic, about 55° down, fixed rotation. Zoom only.</td><td>Perspective, hero angles</td></tr>
+        <tr><td>Models</td><td>Simple, clean low-poly with flat textures</td><td>Over-detailed "AI art" surfaces</td></tr>
+        <tr><td>Scale</td><td>Real-world sizes (table below)</td><td>Giant units, tiny houses</td></tr>
+        <tr><td>Light</td><td>One sun with hard, crisp shadows</td><td>Glow, bloom, sunsets</td></tr>
+        <tr><td>Colour</td><td>Muted, natural. Team colour is a small stripe.</td><td>Saturated or neon colours</td></tr>
+        <tr><td>Pixel filter</td><td>Render at 1/4 resolution with nearest-neighbour upscale</td><td>Blurry scaling, no filter</td></tr>
+        <tr><td>Effects</td><td>Grey smoke columns, small fires, craters, dust</td><td>Huge glowing explosions</td></tr>
+      </table>
+      <h3 style="margin-top:3mm">Scale table (default zoom)</h3>
+      <table>
+        <tr><th>Object</th><th>Real size</th><th>On screen*</th></tr>
+        <tr><td>Soldier</td><td>1.8 m</td><td>~6 px</td></tr>
+        <tr><td>Jeep / Buggy</td><td>4.5 m</td><td>~16 px</td></tr>
+        <tr><td>Main Battle Tank</td><td>9.5 m long</td><td>~32 px</td></tr>
+        <tr><td>Light mech</td><td>7 m tall</td><td>~24 px</td></tr>
+        <tr><td>House</td><td>12 m</td><td>~40 px</td></tr>
+        <tr><td>Factory / Command Core</td><td>40–60 m</td><td>~130–200 px</td></tr>
+        <tr><td>Experimental walker</td><td>30 m tall</td><td>~100 px</td></tr>
+        <tr><td>Aircraft carrier</td><td>300 m</td><td>~1,000 px (bigger than the screen)</td></tr>
+      </table>
+      <p class="small" style="margin-top:1mm">*On a 1080p screen before the pixel filter. Players can zoom 0.5× to 2×.</p>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>23</span></div>
+</section>
+
+<!-- ============ 22 TECH ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>22 · Technology</span></div>
+  <div class="kicker">22 · Technology and performance</div>
+  <h1>Big battles on a phone</h1>
+  <div class="cols">
+    <div>
+      <h2>Engine and structure</h2>
+      <ul>
+        <li><b>Engine:</b> Unity 6 LTS with URP, Android first. Full technical design in <i>Docs/03_TechnicalDesign</i>.</li><li><b>Rendering:</b> simple low-poly 3D with a fixed orthographic camera. The scene renders at <b>1/4 resolution</b> and is scaled up with nearest-neighbour, which is the locked pixel filter. Rendering fewer pixels is also cheaper on phones.</li>
+        <li><b>Simulation separate from drawing:</b> game logic runs at 20 ticks per second, and the drawing runs at 60 FPS.</li>
+        <li><b>Pathfinding:</b> flow fields for groups and simple steering so units don't overlap. Separate maps for land, hover, sea and air.</li>
+        <li><b>Spatial grid:</b> each unit only checks its neighbours, which keeps 500+ units fast.</li>
+        <li><b>Object pools:</b> bullets, smoke and explosions are reused, not re-created.</li>
+      </ul>
+      <h2>Performance targets</h2>
+      <table>
+        <tr><th>Test</th><th>Target</th></tr>
+        <tr><td>Normal battle</td><td>300 units, 60 FPS on mid-range phones</td></tr>
+        <tr><td>Big battle</td><td>600 units, 45+ FPS</td></tr>
+        <tr><td>Stress test</td><td>1,000 units, 30 FPS (strategic zoom)</td></tr>
+        <tr><td>Install size</td><td>Under 500 MB</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Units are data files</h2>
+      <p>Every unit and building is a data asset (a Unity ScriptableObject), so balancing needs no coding. A JSON version for player mods comes after launch. Example of the fields:</p>
+      <div class="code">[unit]
+id          = rail_tank
+name        = Rail Tank
+factory     = vehicle_plant
+tier        = 2
+cost        = 1600
+build_time  = 22
+health      = 1400
+armour      = armoured
+speed       = 1.1
+vision      = 9
+
+[weapon_main]
+damage      = 420
+vs_armoured = 1.5
+vs_infantry = 0.3
+range       = 11
+reload      = 3.2
+projectile  = rail_slug
+
+[art]
+model       = units/land/rail_tank.glb
+turret      = turret_main
+scale_m     = 9.5 x 3.7</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>24</span></div>
+</section>
+
+<!-- ============ 23 PLAN ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>23 · Build plan</span></div>
+  <div class="kicker">23 · Build plan</div>
+  <h1>Make one great battle first</h1>
+  <div class="flow">
+    <div class="st"><span class="num">1</span><b>Core prototype</b>Camera, touch, select, move, attack, 3 units, fog</div><div class="ar">›</div>
+    <div class="st"><span class="num">2</span><b>Economy and base</b>Core, Constructor, drills, Vehicle Plant, turret</div><div class="ar">›</div>
+    <div class="st"><span class="num">3</span><b>All domains</b>Airfield, Shipyard, Mech Bay, hover, 1 experimental</div><div class="ar">›</div>
+    <div class="st"><span class="num">4</span><b>Art slice</b>1 final-quality forest map and 12 final units</div><div class="ar">›</div>
+    <div class="st"><span class="num">5</span><b>Skirmish AI</b>Regular difficulty plus 2 doctrines</div><div class="ar">›</div>
+    <div class="st"><span class="num">6</span><b>Content</b>All units, campaign, modes</div><div class="ar">›</div>
+    <div class="st"><span class="num">7</span><b>Polish</b>Tutorial, audio, saves, device tests</div>
+  </div>
+  <div class="cols">
+    <div>
+      <h2>First prototype: done when…</h2>
+      <ul>
+        <li>You can build a Constructor, drill 3 deposits and build a Vehicle Plant on a real Android phone.</li>
+        <li>200 tanks move across the map in groups without getting stuck.</li>
+        <li>A Light Tank, Rail Tank and SAM Truck clearly counter each other.</li>
+        <li>Strategic zoom shows icons and orders still work.</li>
+        <li>Units load from data files, and changing a number changes the game.</li>
+        <li>A simple AI builds, drills and attacks.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Don't build early</h2>
+      <ul>
+        <li>No campaign missions before skirmish is fun.</li>
+        <li>No final art before the camera and scale test passes on a phone.</li>
+        <li>No map editor before the data-file format is stable.</li>
+        <li>No more than 12 units until the counter system feels right.</li>
+      </ul>
+      <div class="box gold"><b class="t">Launch content target</b>47 units · 16 buildings · 50 campaign missions · 24 skirmish maps · 30 challenges · Survival · Sandbox.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>25</span></div>
+</section>
+
+<!-- ============ 24 GLOSSARY ============ -->
+<section class="page">
+  <div class="hdr"><span>Frontier War · Game Design Document</span><span>24 · Glossary</span></div>
+  <div class="kicker">24 · Glossary</div>
+  <h1>Words used in this document</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>Word</th><th>Meaning</th></tr>
+        <tr><td>RTS</td><td>Real-time strategy: you build and command armies while time keeps running.</td></tr>
+        <tr><td>Credits</td><td>The one currency. Everything costs credits.</td></tr>
+        <tr><td>Ore deposit</td><td>A fixed crystal spot on the map where a drill can be built.</td></tr>
+        <tr><td>Ore Drill</td><td>The building that earns credits on a deposit.</td></tr>
+        <tr><td>Command Core</td><td>Your starting main building. It earns income, builds Constructors and unlocks tiers.</td></tr>
+        <tr><td>Constructor</td><td>The builder unit.</td></tr>
+        <tr><td>Tier (T1/T2/T3)</td><td>A tech level. Higher tiers unlock stronger units.</td></tr>
+        <tr><td>Experimental</td><td>A giant, very expensive late-game unit.</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th>Word</th><th>Meaning</th></tr>
+        <tr><td>Hover / amphibious</td><td>A unit that can travel on both land and water.</td></tr>
+        <tr><td>Counter</td><td>A unit that is strong against another unit.</td></tr>
+        <tr><td>Attack-move</td><td>Move to a point but fight anything met on the way.</td></tr>
+        <tr><td>Fog of war</td><td>Areas you cannot currently see.</td></tr>
+        <tr><td>Strategic zoom</td><td>Fully zoomed-out view where units become icons.</td></tr>
+        <tr><td>Command Points</td><td>Points you earn in battle to use support powers.</td></tr>
+        <tr><td>Salvage</td><td>Recycling a wreck into credits.</td></tr>
+        <tr><td>Doctrine</td><td>An AI's play style, such as Blitz or Fortress.</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="box" style="margin-top:5mm"><b class="t">Status of this draft</b>This is draft 1.0 for discussion. All costs, health values and timings are first guesses to be balanced in the prototype. Next step: approve this design, then build milestone 1 (core prototype).</div>
+  <div class="ftr"><span>Draft 1.0 · 23 Nov 2026</span><span>26</span></div>
+</section>
+
+</body>
+</html>

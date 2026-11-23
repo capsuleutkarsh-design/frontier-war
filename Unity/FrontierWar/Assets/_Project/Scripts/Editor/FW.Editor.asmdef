@@ -1,0 +1,28 @@
+{
+    "name": "FW.Editor",
+    "rootNamespace": "FW.Editor",
+    "references": [
+        "FW.Core",
+        "FW.Data",
+        "FW.Sim",
+        "FW.AI",
+        "FW.View",
+        "FW.UI",
+        "FW.Game",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime",
+        "UnityEngine.UI",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

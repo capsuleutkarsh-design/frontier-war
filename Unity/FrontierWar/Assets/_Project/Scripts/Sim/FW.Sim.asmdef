@@ -1,0 +1,17 @@
+{
+    "name": "FW.Sim",
+    "rootNamespace": "FW.Sim",
+    "references": [
+        "FW.Core",
+        "FW.Data"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

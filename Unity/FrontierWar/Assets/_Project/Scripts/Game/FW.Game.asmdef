@@ -1,0 +1,23 @@
+{
+    "name": "FW.Game",
+    "rootNamespace": "FW.Game",
+    "references": [
+        "FW.Core",
+        "FW.Data",
+        "FW.Sim",
+        "FW.AI",
+        "FW.View",
+        "FW.UI",
+        "Unity.InputSystem",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

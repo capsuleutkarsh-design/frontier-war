@@ -1,0 +1,19 @@
+{
+    "name": "FW.UI",
+    "rootNamespace": "FW.UI",
+    "references": [
+        "FW.Core",
+        "FW.Data",
+        "FW.Sim",
+        "FW.View"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

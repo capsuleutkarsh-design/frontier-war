@@ -1,0 +1,20 @@
+{
+    "name": "FW.View",
+    "rootNamespace": "FW.View",
+    "references": [
+        "FW.Core",
+        "FW.Data",
+        "FW.Sim",
+        "Unity.InputSystem",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
