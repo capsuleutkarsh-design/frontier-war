@@ -30,16 +30,18 @@
 
 ## 3. Our scale table (locked)
 
-| Object | Real size | At default zoom (1080p, before filter) |
-|---|---|---|
-| Soldier | 1.8 m | ~6 px |
-| Jeep / buggy | 4.5 m | ~16 px |
-| Main battle tank | 9.5 m | ~32 px |
-| Light mech | 7 m tall | ~24 px |
-| House | 12 m | ~40 px |
-| Factory / Command Core | 40–60 m | ~130–200 px |
-| Experimental walker | 30 m tall | ~100 px |
-| Carrier | 300 m | ~1,000 px |
+| Object | Real size | Default zoom (orthographic size 60, 1080p) | After the pixel filter (÷4) |
+|---|---|---|---|
+| Soldier | 1.8 m | ~16 px | ~4 big pixels |
+| Jeep / buggy | 4.5 m | ~40 px | ~10 |
+| Main battle tank | 9.5 m | ~85 px | ~21 |
+| Light mech | 7 m tall | ~63 px | ~16 |
+| House | 12 m | ~108 px | ~27 |
+| Factory / Command Core | 40–60 m | ~360–540 px | ~90–135 |
+| Experimental walker | 30 m tall | ~270 px | ~68 |
+| Carrier | 300 m | ~2,700 px (bigger than the screen) | – |
+
+The rule: at orthographic size 60 the screen shows about 120 m of height, so 1 m = 9 screen pixels on a 1080p screen. Zooming out to 180 (strategic) makes everything 3× smaller.
 
 **1 Unity unit = 1 metre.** Every model is made at real size, and nothing is scaled by hand in the scene.
 
